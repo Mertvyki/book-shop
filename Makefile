@@ -61,8 +61,8 @@ logs-cleanup:
 		echo "Отмена"; \
 	fi
 
-# todoapp-run:
-# 	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
-# 	export POSTGRES_HOST=localhost && \
-# 	go mod tidy && \
-# 	go run ${PROJECT_ROOT}/cmd/todoapp/main.go
+bookshop-run:
+	@export LOGGER_FOLDER=${PROJECT_ROOT}/out/logs && \
+	export POSTGRES_HOST=localhost && \
+	go mod tidy && \
+	go run ${PROJECT_ROOT}/cmd/bookshop/main.go
