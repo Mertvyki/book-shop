@@ -116,3 +116,12 @@ CREATE TABLE bookshop.cart_items (
 );
 
 CREATE INDEX idx_cart_items_user_id ON bookshop.cart_items(user_id);
+
+CREATE TABLE bookshop.refresh_tokens (
+    id          SERIAL PRIMARY KEY,
+    user_id     INTEGER NOT NULL REFERENCES bookshop.users(id) ON DELETE CASCADE,
+    token_hash  VARCHAR(255) NOT NULL,
+    expires_at  TIMESTAMPTZ NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX idx_refresh_tokens_user_id ON bookshop.refresh_tokens(user_id);

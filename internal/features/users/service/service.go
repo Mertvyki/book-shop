@@ -51,6 +51,10 @@ type UserRepository interface {
 		ctx context.Context,
 		email string,
 	) (*domain.User, error)
+	ByID(
+		ctx context.Context,
+		id int,
+	) (*domain.User, error)
 }
 
 type PasswordHash interface {

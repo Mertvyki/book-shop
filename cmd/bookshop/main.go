@@ -14,6 +14,9 @@ import (
 	core_security "github.com/Mertvyki/book-shop/internal/core/security"
 	core_http_middleware "github.com/Mertvyki/book-shop/internal/core/transport/http/middleware"
 	core_http_server "github.com/Mertvyki/book-shop/internal/core/transport/http/server"
+	auth_postgres_repository "github.com/Mertvyki/book-shop/internal/features/auth/repository/postgres"
+	auth_service "github.com/Mertvyki/book-shop/internal/features/auth/service"
+	auth_transport_http "github.com/Mertvyki/book-shop/internal/features/auth/transport/http"
 	users_postgres_repository "github.com/Mertvyki/book-shop/internal/features/users/repository/postgres"
 	user_service "github.com/Mertvyki/book-shop/internal/features/users/service"
 	users_transport_http "github.com/Mertvyki/book-shop/internal/features/users/transport/http"
@@ -26,6 +29,7 @@ func main() {
 	time.Local = cfg.TimeZone
 	hasher := core_security.NewBcryptHasher(12)
 	tokenManager := core_security.NewJWTManager(jwtCfg.Secret, jwtCfg.AccessTokenExpiry, jwtCfg.Issuer)
+	refreshToken := core_security.NewRefreshTokenService()
 	authMiddleware := core_http_middleware.Authenticate(tokenManager)
 	adminMiddleware := core_http_middleware.RequireRole("admin")
 
@@ -59,6 +63,11 @@ func main() {
 	usersService := user_service.NewUserService(usersRepository, hasher, tokenManager)
 	usersTransportHTTP := users_transport_http.NewUsersHTTPHandler(usersService, authMiddleware, adminMiddleware)
 
+	logger.Debug("initializing feature", zap.String("feature", "auth"))
+	authRepository := auth_postgres_repository.NewRefreshTokenRepository(pool)
+	authService := auth_service.NewAuthService(authRepository, usersRepository, hasher, tokenManager, refreshToken, 7*24*time.Hour)
+	authTransportHTTP := auth_transport_http.NewAuthHTTPHandler(authService)
+
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
@@ -71,6 +80,7 @@ func main() {
 
 	apiVersionRouterV1 := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouterV1.RegisterRouters(usersTransportHTTP.Routes()...)
+	apiVersionRouterV1.RegisterRouters(authTransportHTTP.Routes()...)
 
 	httpServer.RegisterAPIRouters(apiVersionRouterV1)
 

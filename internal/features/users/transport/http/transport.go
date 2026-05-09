@@ -90,16 +90,26 @@ func (h *UsersHTTPHandler) Routes() []core_http_server.Route {
 			Method:  http.MethodGet,
 			Path:    "/users/{id}",
 			Handler: h.GetUser,
+			Middleware: []core_http_middleware.Middleware{
+				h.authMiddleware,
+			},
 		},
 		{
 			Method:  http.MethodDelete,
 			Path:    "/users/{id}",
 			Handler: h.DeleteUser,
+			Middleware: []core_http_middleware.Middleware{
+				h.authMiddleware,
+				h.adminMiddleware,
+			},
 		},
 		{
 			Method:  http.MethodPatch,
 			Path:    "/users/{id}",
 			Handler: h.PatchUser,
+			Middleware: []core_http_middleware.Middleware{
+				h.authMiddleware,
+			},
 		},
 	}
 }
