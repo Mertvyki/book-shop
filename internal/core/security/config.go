@@ -8,9 +8,10 @@ import (
 )
 
 type JWTConfig struct {
-	Secret            string        `envconfig:"SECRET" required:"true"`
-	AccessTokenExpiry time.Duration `envconfig:"ACCESS_TOKEN_EXPIRY" default:"15m"`
-	Issuer            string        `envconfig:"ISSUER" default:"bookshop"`
+	Secret             string        `envconfig:"SECRET" required:"true"`
+	AccessTokenExpiry  time.Duration `envconfig:"ACCESS_TOKEN_EXPIRY" default:"15m"`
+	RefreshTokenExpiry time.Duration `envconfig:"REFRESH_TOKEN_EXPIRY" default:"168h"`
+	Issuer             string        `envconfig:"ISSUER" default:"bookshop"`
 }
 
 func NewJWTConfig() (JWTConfig, error) {
