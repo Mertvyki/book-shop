@@ -25,6 +25,12 @@ env-port-forward:
 env-port-close:
 	@docker compose down port-forwarder
 
+env-minio-up:
+	@docker compose up -d minio
+
+env-minio-down:
+	@docker compose down minio
+
 migrate-create:
 	@if [ -z "$(seq)" ]; then \
 		echo "Отсутсвует параметр seq"; \
@@ -55,7 +61,7 @@ migrate-action:
 logs-cleanup:
 	@read -p "Очистить все log файлы? [y/N]: " ans; \
 	if [ "$$ans" = "y" ]; then \
-		rm -rf ${PROJECT_ROOT}/out/logs && \
+		sudo rm -rf ${PROJECT_ROOT}/out/logs && \
 		echo "Очищено"; \
 	else \
 		echo "Отмена"; \

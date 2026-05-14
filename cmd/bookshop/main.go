@@ -12,11 +12,15 @@ import (
 	core_logger "github.com/Mertvyki/book-shop/internal/core/logger"
 	core_pgx_pool "github.com/Mertvyki/book-shop/internal/core/repository/postgres/pool/pgx"
 	core_security "github.com/Mertvyki/book-shop/internal/core/security"
+	core_minio "github.com/Mertvyki/book-shop/internal/core/storage/minio"
 	core_http_middleware "github.com/Mertvyki/book-shop/internal/core/transport/http/middleware"
 	core_http_server "github.com/Mertvyki/book-shop/internal/core/transport/http/server"
 	auth_postgres_repository "github.com/Mertvyki/book-shop/internal/features/auth/repository/postgres"
 	auth_service "github.com/Mertvyki/book-shop/internal/features/auth/service"
 	auth_transport_http "github.com/Mertvyki/book-shop/internal/features/auth/transport/http"
+	book_postgres_repository "github.com/Mertvyki/book-shop/internal/features/books/repository/postgres"
+	books_service "github.com/Mertvyki/book-shop/internal/features/books/service"
+	books_transport_http "github.com/Mertvyki/book-shop/internal/features/books/transport/http"
 	users_postgres_repository "github.com/Mertvyki/book-shop/internal/features/users/repository/postgres"
 	user_service "github.com/Mertvyki/book-shop/internal/features/users/service"
 	users_transport_http "github.com/Mertvyki/book-shop/internal/features/users/transport/http"
@@ -26,12 +30,18 @@ import (
 func main() {
 	cfg := core_config.NewConfigMust()
 	jwtCfg := core_security.NewJWTConfigMust()
+	minioCfg := core_minio.NewConfigMust()
 	time.Local = cfg.TimeZone
 	hasher := core_security.NewBcryptHasher(12)
 	tokenManager := core_security.NewJWTManager(jwtCfg.Secret, jwtCfg.AccessTokenExpiry, jwtCfg.Issuer)
 	refreshToken := core_security.NewRefreshTokenService()
 	authMiddleware := core_http_middleware.Authenticate(tokenManager)
 	adminMiddleware := core_http_middleware.RequireRole("admin")
+
+	minioClient, err := core_minio.NewClient(context.Background(), minioCfg)
+	if err != nil {
+		panic(err)
+	}
 
 	ctx, cancel := signal.NotifyContext(
 		context.Background(),
@@ -68,6 +78,11 @@ func main() {
 	authService := auth_service.NewAuthService(authRepository, usersRepository, hasher, tokenManager, refreshToken, 7*24*time.Hour)
 	authTransportHTTP := auth_transport_http.NewAuthHTTPHandler(authService)
 
+	logger.Debug("initializing feature", zap.String("feature", "books"))
+	booksRepository := book_postgres_repository.NewBooksRepository(pool)
+	booksService := books_service.NewBookService(booksRepository, minioClient)
+	booksHTTPHandler := books_transport_http.NewBooksHTTPHandler(booksService)
+
 	logger.Debug("initializing HTTP server")
 	httpServer := core_http_server.NewHTTPServer(
 		core_http_server.NewConfigMust(),
@@ -81,6 +96,7 @@ func main() {
 	apiVersionRouterV1 := core_http_server.NewApiVersionRouter(core_http_server.ApiVersion1)
 	apiVersionRouterV1.RegisterRouters(usersTransportHTTP.Routes()...)
 	apiVersionRouterV1.RegisterRouters(authTransportHTTP.Routes()...)
+	apiVersionRouterV1.RegisterRouters(booksHTTPHandler.Routes()...)
 
 	httpServer.RegisterAPIRouters(apiVersionRouterV1)
 
