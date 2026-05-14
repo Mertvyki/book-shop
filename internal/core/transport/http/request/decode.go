@@ -37,3 +37,50 @@ func DecodeAndValidateRequest(r *http.Request, dest any) error {
 
 	return nil
 }
+
+func DecodeAndValidateMultipartJSONField(
+	r *http.Request,
+	field string,
+	dest any,
+) error {
+
+	payload := r.FormValue(field)
+	if payload == "" {
+		return fmt.Errorf(
+			"multipart field=%s required: %w",
+			field,
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	err := json.Unmarshal(
+		[]byte(payload),
+		dest,
+	)
+	if err != nil {
+		return fmt.Errorf(
+			"unmarshal multipart json: %v: %w",
+			err,
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	var validationErr error
+
+	v, ok := dest.(validateble)
+	if ok {
+		validationErr = v.Validate()
+	} else {
+		validationErr = requestValidator.Struct(dest)
+	}
+
+	if validationErr != nil {
+		return fmt.Errorf(
+			"request validation: %v: %w",
+			validationErr,
+			core_errors.ErrInvalidArgument,
+		)
+	}
+
+	return nil
+}

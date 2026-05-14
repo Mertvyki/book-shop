@@ -34,8 +34,8 @@ CREATE TABLE bookshop.books (
     price            DECIMAL(10,2) NOT NULL,
     book_type        VARCHAR(10)  NOT NULL,   -- 'digital' или 'physical'
     stock_quantity   INTEGER,                -- остаток (только для physical)
-    file_url         TEXT,                   -- ссылка на файл (для digital)
-    cover_image_url  TEXT,
+    file_key         TEXT,                   -- ссылка на файл (для digital)
+    cover_image_key  TEXT,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     CONSTRAINT chk_price_nonnegative CHECK (price >= 0),
@@ -69,7 +69,7 @@ CREATE TABLE bookshop.orders (
     status              VARCHAR(20)    NOT NULL DEFAULT 'pending',
     total_amount        DECIMAL(10,2)  NOT NULL,
     shipping_address_id INTEGER        REFERENCES bookshop.addresses(id) ON DELETE SET NULL,
-    payment_method      VARCHAR(50),
+    payment_method      VARCHAR(50), -- возможно удалить
     created_at          TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
     updated_at          TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
 

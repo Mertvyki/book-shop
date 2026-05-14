@@ -13,14 +13,14 @@ func (r *UserRepository) ByID(ctx context.Context, id int) (*domain.User, error)
 	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
 	defer cancel()
 
-	var model UserModel
+	var userModel UserModel
 	err := r.pool.QueryRow(ctx,
 		`SELECT id, version, email, password_hash, full_name, phone_number, role, created_at, updated_at
 		 FROM bookshop.users WHERE id = $1`, id,
 	).Scan(
-		&model.ID, &model.Version, &model.Email, &model.PasswordHash,
-		&model.FullName, &model.PhoneNumber, &model.Role,
-		&model.CreatedAt, &model.UpdatedAt,
+		&userModel.ID, &userModel.Version, &userModel.Email, &userModel.PasswordHash,
+		&userModel.FullName, &userModel.PhoneNumber, &userModel.Role,
+		&userModel.CreatedAt, &userModel.UpdatedAt,
 	)
 	if err != nil {
 		if errors.Is(err, core_postgres_pool.ErrNoRows) {
@@ -29,15 +29,15 @@ func (r *UserRepository) ByID(ctx context.Context, id int) (*domain.User, error)
 		return nil, fmt.Errorf("query user by id: %w", err)
 	}
 	user := domain.NewUser(
-		model.ID,
-		model.Version,
-		model.Email,
-		model.PasswordHash,
-		model.FullName,
-		model.PhoneNumber,
-		model.Role,
-		model.CreatedAt,
-		model.UpdatedAt,
+		userModel.ID,
+		userModel.Version,
+		userModel.Email,
+		userModel.PasswordHash,
+		userModel.FullName,
+		userModel.PhoneNumber,
+		userModel.Role,
+		userModel.CreatedAt,
+		userModel.UpdatedAt,
 	)
 	return &user, nil
 }
