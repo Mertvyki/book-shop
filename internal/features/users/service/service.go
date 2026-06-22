@@ -18,6 +18,7 @@ type PatchUserPayload struct {
 	PhoneNumber domain.Nullable[string]
 	Password    domain.Nullable[string]
 	OldPassword domain.Nullable[string]
+	Role        domain.Nullable[string]
 }
 
 type UserRepository interface {
@@ -31,6 +32,8 @@ type UserRepository interface {
 		limit *int,
 		offset *int,
 	) ([]domain.User, error)
+
+	CountUsers(ctx context.Context) (int, error)
 
 	GetUser(
 		ctx context.Context,

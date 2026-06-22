@@ -1,0 +1,12 @@
+DELETE FROM bookshop.reviews WHERE book_id IN (SELECT id FROM bookshop.books);
+DELETE FROM bookshop.cart_items WHERE user_id IN (SELECT id FROM bookshop.users WHERE email = 'customer@test.ru');
+DELETE FROM bookshop.order_items WHERE order_id IN (SELECT id FROM bookshop.orders WHERE user_id IN (SELECT id FROM bookshop.users WHERE email = 'customer@test.ru'));
+DELETE FROM bookshop.orders WHERE user_id IN (SELECT id FROM bookshop.users WHERE email = 'customer@test.ru');
+DELETE FROM bookshop.addresses WHERE user_id IN (SELECT id FROM bookshop.users WHERE email = 'customer@test.ru');
+DELETE FROM bookshop.users WHERE email = 'customer@test.ru';
+DELETE FROM bookshop.book_categories WHERE book_id IN (SELECT id FROM bookshop.books);
+DELETE FROM bookshop.book_authors WHERE book_id IN (SELECT id FROM bookshop.books);
+DELETE FROM bookshop.books;
+DELETE FROM bookshop.authors WHERE name IN ('Фёдор Достоевский', 'Лев Толстой', 'Михаил Булгаков', 'Братья Стругацкие', 'Стивен Кинг', 'Роберт Мартин', 'Юваль Ной Харари', 'Джоан Роулинг');
+DELETE FROM bookshop.categories WHERE slug IN ('fiction', 'non-fiction', 'sci-fi', 'history', 'tech', 'children');
+DELETE FROM bookshop.publishers WHERE name IN ('Эксмо', 'АСТ', 'МИФ', 'Питер');

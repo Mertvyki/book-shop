@@ -5,17 +5,21 @@ import (
 	"fmt"
 
 	"github.com/Mertvyki/book-shop/internal/core/domain"
-	books_transport_http "github.com/Mertvyki/book-shop/internal/features/books/transport/http"
 )
 
-func (s *BookService) GetBooks(
-	ctx context.Context,
-	queryParams books_transport_http.GetBooksQueryParams,
-) ([]domain.Book, error) {
-	books, err := s.booksRepository.GetBooks(ctx, queryParams)
+type GetBooksResult struct {
+	Books []domain.Book
+	Total int
+}
+
+func (s *BookService) GetBooks(ctx context.Context, queryParams GetBooksQueryParams) (GetBooksResult, error) {
+	books, total, err := s.booksRepository.GetBooks(ctx, queryParams)
 	if err != nil {
-		return nil, fmt.Errorf("get books from repository: %w", err)
+		return GetBooksResult{}, fmt.Errorf("get books from repository: %w", err)
 	}
 
-	return books, nil
+	return GetBooksResult{
+		Books: books,
+		Total: total,
+	}, nil
 }

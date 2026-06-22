@@ -8,16 +8,43 @@ import (
 	core_http_request "github.com/Mertvyki/book-shop/internal/core/transport/http/request"
 	core_http_response "github.com/Mertvyki/book-shop/internal/core/transport/http/response"
 	core_http_types "github.com/Mertvyki/book-shop/internal/core/transport/http/types"
+	books_service "github.com/Mertvyki/book-shop/internal/features/books/service"
 )
 
 type PatchBookRequest struct {
 	Title         core_http_types.Nullable[string]  `json:"title"`
-	Author        core_http_types.Nullable[string]  `json:"author"`
 	Description   core_http_types.Nullable[string]  `json:"description"`
 	ISBN          core_http_types.Nullable[string]  `json:"isbn"`
 	Price         core_http_types.Nullable[float64] `json:"price"`
 	BookType      core_http_types.Nullable[string]  `json:"book_type"`
 	StockQuantity core_http_types.Nullable[int]     `json:"stock_quantity"`
+	PublisherID   core_http_types.Nullable[int]     `json:"publisher_id"`
+	AuthorIDs     []int                             `json:"author_ids"`
+	CategoryIDs   []int                             `json:"category_ids"`
+}
+
+func (r PatchBookRequest) ToService() books_service.PatchBookPayload {
+	payload := books_service.PatchBookPayload{
+		Title:       r.Title.ToDomain().Value,
+		Description: r.Description.ToDomain().Value,
+		ISBN:        r.ISBN.ToDomain().Value,
+		Price:       r.Price.ToDomain().Value,
+		BookType:    r.BookType.ToDomain().Value,
+		AuthorIDs:   r.AuthorIDs,
+		CategoryIDs: r.CategoryIDs,
+	}
+
+	pub := r.PublisherID.ToDomain()
+	if pub.Set {
+		payload.PublisherID = pub.Value
+	}
+
+	stock := r.StockQuantity.ToDomain()
+	if stock.Set {
+		payload.StockQuantity = stock.Value
+	}
+
+	return payload
 }
 
 func (h *BooksHTTPHandler) PatchBook(rw http.ResponseWriter, r *http.Request) {
@@ -27,33 +54,20 @@ func (h *BooksHTTPHandler) PatchBook(rw http.ResponseWriter, r *http.Request) {
 
 	bookID, err := core_http_request.GetIntPathValue(r, "id")
 	if err != nil {
-		responseHandler.ErrorResponse(
-			err,
-			"failed to get bookID path value",
-		)
-
+		responseHandler.ErrorResponse(err, "failed to get bookID path value")
 		return
 	}
 
 	err = r.ParseMultipartForm(32 << 20)
 	if err != nil {
-		responseHandler.ErrorResponse(
-			err,
-			"failed to parse multipart form",
-		)
-
+		responseHandler.ErrorResponse(err, "failed to parse multipart form")
 		return
 	}
 
 	var request PatchBookRequest
-
 	err = core_http_request.DecodeAndValidateMultipartJSONField(r, "request", &request)
 	if err != nil {
-		responseHandler.ErrorResponse(
-			err,
-			"failed to decode request",
-		)
-
+		responseHandler.ErrorResponse(err, "failed to decode request")
 		return
 	}
 
@@ -78,18 +92,14 @@ func (h *BooksHTTPHandler) PatchBook(rw http.ResponseWriter, r *http.Request) {
 	book, err := h.booksService.PatchBook(
 		ctx,
 		bookID,
-		request,
+		request.ToService(),
 		coverFile,
 		coverHeader,
 		bookFile,
 		bookHeader,
 	)
 	if err != nil {
-		responseHandler.ErrorResponse(
-			err,
-			"failed to patch book",
-		)
-
+		responseHandler.ErrorResponse(err, "failed to patch book")
 		return
 	}
 

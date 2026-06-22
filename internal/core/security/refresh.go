@@ -5,8 +5,6 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type RefreshTokenService struct{}
@@ -28,6 +26,3 @@ func (s *RefreshTokenService) Hash(token string) (string, error) {
 	return fmt.Sprintf("%x", sum), nil
 }
 
-func (s *RefreshTokenService) Compare(token, hashed string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(hashed), []byte(token)) == nil
-}

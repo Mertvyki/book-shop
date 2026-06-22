@@ -8,6 +8,7 @@ import (
 
 	core_errors "github.com/Mertvyki/book-shop/internal/core/errrors"
 	core_logger "github.com/Mertvyki/book-shop/internal/core/logger"
+	core_postgres_pool "github.com/Mertvyki/book-shop/internal/core/repository/postgres/pool"
 	"go.uber.org/zap"
 )
 
@@ -50,6 +51,15 @@ func (h *HTTPResponseHandler) ErrorResponse(err error, msg string) {
 		logFunc = h.log.Debug
 	case errors.Is(err, core_errors.ErrConflict):
 		statusCode = http.StatusConflict
+		logFunc = h.log.Warn
+	case errors.Is(err, core_postgres_pool.ErrUniqueViolation):
+		statusCode = http.StatusConflict
+		logFunc = h.log.Warn
+	case errors.Is(err, core_postgres_pool.ErrCheckViolation):
+		statusCode = http.StatusBadRequest
+		logFunc = h.log.Warn
+	case errors.Is(err, core_errors.ErrUnauthorized):
+		statusCode = http.StatusUnauthorized
 		logFunc = h.log.Warn
 	default:
 		statusCode = http.StatusInternalServerError

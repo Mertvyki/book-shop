@@ -12,7 +12,8 @@ func (r *BooksRepository) DeleteBook(ctx context.Context, id int) error {
 	defer cancel()
 
 	query := `
-	DELETE FROM bookshop.books
+	UPDATE bookshop.books
+	SET deleted_at = NOW()
 	WHERE id=$1;
 	`
 

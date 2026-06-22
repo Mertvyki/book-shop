@@ -10,6 +10,14 @@ import (
 
 type GetBookResponse BookDTOResponse
 
+// @Summary Get book by ID
+// @Description Get detailed information about a book
+// @Tags books
+// @Produce json
+// @Param id path int true "Book ID"
+// @Success 200 {object} BookDTOResponse
+// @Failure 404 {object} map[string]string
+// @Router /books/{id} [get]
 func (h *BooksHTTPHandler) GetBook(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

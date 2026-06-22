@@ -13,26 +13,22 @@ type GetUserResponse UserDTOResponse
 func (h *UsersHTTPHandler) GetUser(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
-
 	responseHandler := core_http_response.NewHTTPResponseHandler(log, rw)
 
 	userID, err := core_http_request.GetIntPathValue(r, "id")
 	if err != nil {
-		responseHandler.ErrorResponse(
-			err,
-			"failed to get userID path value",
-		)
+		responseHandler.ErrorResponse(err, "failed to get userID path value")
+		return
+	}
 
+	if err := checkOwnerOrAdmin(r, userID); err != nil {
+		responseHandler.ErrorResponse(err, "forbidden")
 		return
 	}
 
 	user, err := h.usersService.GetUser(ctx, userID)
 	if err != nil {
-		responseHandler.ErrorResponse(
-			err,
-			"failed to get user",
-		)
-
+		responseHandler.ErrorResponse(err, "failed to get user")
 		return
 	}
 

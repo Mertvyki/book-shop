@@ -15,6 +15,15 @@ type LoginUserRequest struct {
 
 type LoginUserResponse LoginDTOResponse
 
+// @Summary Login
+// @Description Authenticate user by email and password
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body LoginUserRequest true "Credentials"
+// @Success 200 {object} LoginDTOResponse
+// @Failure 400 {object} map[string]string
+// @Router /auth/login [post]
 func (h *AuthHTTPHandler) Login(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
@@ -40,7 +49,7 @@ func (h *AuthHTTPHandler) Login(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := LoginUserResponse(loginDTOFromDomain(access, refresh, user))
+	response := LoginUserResponse(loginDTOFromDomain(access, refresh, user.ID, user.Email, user.FullName, user.Role))
 
 	responseHandler.JSONResponse(response, http.StatusOK)
 }

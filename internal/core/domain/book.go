@@ -7,7 +7,6 @@ type Book struct {
 	Version int
 
 	Title         string
-	Author        string
 	Description   *string
 	ISBN          *string
 	Price         float64
@@ -15,6 +14,11 @@ type Book struct {
 	StockQuantity *int
 	FileURL       *string
 	CoverImageURL *string
+	PublisherID   *int
+	Publisher     *Publisher
+	Authors       []Author
+	Categories    []Category
+	AvgRating     float64
 	CreatedAt     time.Time
 }
 
@@ -22,7 +26,6 @@ func NewBook(
 	id int,
 	version int,
 	title string,
-	author string,
 	description *string,
 	isbn *string,
 	price float64,
@@ -30,13 +33,13 @@ func NewBook(
 	stockQuantity *int,
 	fileUrl *string,
 	coverImageUrl *string,
+	publisherID *int,
 	createdAt time.Time,
 ) Book {
 	return Book{
 		ID:            id,
 		Version:       version,
 		Title:         title,
-		Author:        author,
 		Description:   description,
 		ISBN:          isbn,
 		Price:         price,
@@ -44,13 +47,13 @@ func NewBook(
 		StockQuantity: stockQuantity,
 		FileURL:       fileUrl,
 		CoverImageURL: coverImageUrl,
+		PublisherID:   publisherID,
 		CreatedAt:     createdAt,
 	}
 }
 
 func NewBookUninitialized(
 	title string,
-	author string,
 	description *string,
 	isbn *string,
 	price float64,
@@ -58,6 +61,12 @@ func NewBookUninitialized(
 	stockQuantity *int,
 	fileUrl *string,
 	coverImageUrl *string,
+	publisherID *int,
 ) Book {
-	return NewBook(UninitializedID, UninitializedVersion, title, author, description, isbn, price, bookType, stockQuantity, fileUrl, coverImageUrl, time.Now().UTC())
+	return NewBook(
+		UninitializedID, UninitializedVersion,
+		title, description, isbn, price, bookType,
+		stockQuantity, fileUrl, coverImageUrl, publisherID,
+		time.Now().UTC(),
+	)
 }

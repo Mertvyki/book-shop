@@ -24,9 +24,10 @@ func (r *UserRepository) PatchUser(
         password_hash = $2,
         full_name = $3,
         phone_number = $4,
+        role = $5,
         updated_at = NOW(),
         version = version + 1
-	WHERE id=$5 AND version=$6
+	WHERE id=$6 AND version=$7
 	RETURNING
 		id,
         version,
@@ -43,6 +44,7 @@ func (r *UserRepository) PatchUser(
 		user.PasswordHash,
 		user.FullName,
 		user.PhoneNumber,
+		user.Role,
 		user.ID,
 		user.Version,
 	)

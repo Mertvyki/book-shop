@@ -79,3 +79,21 @@ func (c *Client) PresignedGetObject(
 
 	return url.String(), nil
 }
+
+func (c *Client) GetObject(
+	ctx context.Context,
+	objectName string,
+) (io.ReadCloser, string, error) {
+	obj, err := c.cli.GetObject(ctx, c.bucket, objectName, minio.GetObjectOptions{})
+	if err != nil {
+		return nil, "", fmt.Errorf("get object: %w", err)
+	}
+
+	stat, err := obj.Stat()
+	if err != nil {
+		obj.Close()
+		return nil, "", fmt.Errorf("stat object: %w", err)
+	}
+
+	return obj, stat.ContentType, nil
+}

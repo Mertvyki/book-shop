@@ -19,7 +19,7 @@ func (s *AuthService) Login(ctx context.Context, email string, password string) 
 	}
 
 	if !s.hasher.Compare(user.PasswordHash, password) {
-		return "", "", domain.User{}, fmt.Errorf("invalid password: %w", core_errors.ErrInvalidArgument)
+		return "", "", domain.User{}, fmt.Errorf("invalid password: %w", core_errors.ErrUnauthorized)
 	}
 
 	accessToken, err := s.jwtManager.GenerateAccessToken(user.ID, user.Role)
