@@ -9,8 +9,17 @@ type Pool interface {
 	Query(ctx context.Context, sql string, args ...any) (Rows, error)
 	QueryRow(ctx context.Context, sql string, args ...any) Row
 	Exec(ctx context.Context, sql string, arguments ...any) (CommandTag, error)
+	Begin(ctx context.Context) (Tx, error)
+	Ping(ctx context.Context) error
 	Close()
 	OpTimeout() time.Duration
+}
+
+type Tx interface {
+	Commit(ctx context.Context) error
+	Rollback(ctx context.Context) error
+	QueryRow(ctx context.Context, sql string, args ...any) Row
+	Exec(ctx context.Context, sql string, arguments ...any) (CommandTag, error)
 }
 
 type Rows interface {

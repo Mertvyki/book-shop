@@ -9,14 +9,13 @@ import (
 
 	"github.com/Mertvyki/book-shop/internal/core/domain"
 	core_errors "github.com/Mertvyki/book-shop/internal/core/errrors"
-	books_transport_http "github.com/Mertvyki/book-shop/internal/features/books/transport/http"
 	"github.com/google/uuid"
 )
 
 func (s *BookService) PatchBook(
 	ctx context.Context,
 	bookID int,
-	request books_transport_http.PatchBookRequest,
+	payload PatchBookPayload,
 	coverFile multipart.File,
 	coverHeader *multipart.FileHeader,
 	bookFile multipart.File,
@@ -27,78 +26,61 @@ func (s *BookService) PatchBook(
 		return domain.Book{}, fmt.Errorf("failed to get book: %w", err)
 	}
 
-	if request.Title.Set {
-		if request.Title.Value == nil {
-			return domain.Book{}, fmt.Errorf(
-				"title cannot be null: %w",
-				core_errors.ErrInvalidArgument,
-			)
-		}
-
-		book.Title = *request.Title.Value
+	if payload.Title != nil {
+		book.Title = *payload.Title
 	}
 
-	if request.Author.Set {
-		if request.Author.Value == nil {
-			return domain.Book{}, fmt.Errorf(
-				"author cannot be null: %w",
-				core_errors.ErrInvalidArgument,
-			)
-		}
-
-		book.Author = *request.Author.Value
-	}
-
-	if request.Description.Set {
-		if request.Description.Value == nil {
+	if payload.Description != nil {
+		if *payload.Description == "" {
 			book.Description = nil
 		} else {
-			book.Description = request.Description.Value
+			book.Description = payload.Description
 		}
 	}
 
-	if request.ISBN.Set {
-		if request.ISBN.Value == nil {
+	if payload.ISBN != nil {
+		if *payload.ISBN == "" {
 			book.ISBN = nil
 		} else {
-			book.ISBN = request.ISBN.Value
+			book.ISBN = payload.ISBN
 		}
 	}
 
-	if request.Price.Set {
-		if request.Price.Value == nil {
-			return domain.Book{}, fmt.Errorf(
-				"price cannot be null: %w",
-				core_errors.ErrInvalidArgument,
-			)
-		}
-
-		book.Price = *request.Price.Value
+	if payload.Price != nil {
+		book.Price = *payload.Price
 	}
 
-	if request.StockQuantity.Set {
-		if request.StockQuantity.Value == nil {
-			book.StockQuantity = nil
-		} else {
-			book.StockQuantity = request.StockQuantity.Value
-		}
+	if payload.StockQuantity != nil || (payload.StockQuantity == nil && payload.Price != nil) {
+		book.StockQuantity = payload.StockQuantity
 	}
 
-	if book.BookType != "digital" && book.BookType != "physical" {
+	bookType := book.BookType
+	if payload.BookType != nil {
+		bookType = *payload.BookType
+	}
+
+	if bookType != "digital" && bookType != "physical" {
 		return domain.Book{}, fmt.Errorf("invalid book type: %w", core_errors.ErrInvalidArgument)
 	}
 
-	if book.BookType == "digital" {
+	if bookType == "digital" {
 		book.StockQuantity = nil
 	}
 
-	if book.BookType == "physical" && book.StockQuantity == nil {
+	if bookType == "physical" && book.StockQuantity == nil {
 		return domain.Book{}, fmt.Errorf("stock required for physical book: %w", core_errors.ErrInvalidArgument)
+	}
+
+	book.BookType = bookType
+
+	if payload.PublisherID != nil {
+		book.PublisherID = payload.PublisherID
 	}
 
 	oldCover := book.CoverImageURL
 	oldFile := book.FileURL
-	storageUUID := extractStorageUUID(*book.FileURL)
+
+	storageUUID := extractStorageUUID(book.CoverImageURL)
 
 	if coverFile != nil && coverHeader != nil {
 		objectKey := fmt.Sprintf("books/%s/cover%s", storageUUID, filepath.Ext(coverHeader.Filename))
@@ -112,7 +94,7 @@ func (s *BookService) PatchBook(
 	}
 
 	if bookFile != nil && bookHeader != nil {
-		if book.BookType != "digital" {
+		if bookType != "digital" {
 			return domain.Book{}, fmt.Errorf("only digital books can have file: %w", core_errors.ErrInvalidArgument)
 		}
 
@@ -126,7 +108,21 @@ func (s *BookService) PatchBook(
 		book.FileURL = &uploadedKey
 	}
 
-	updatedBook, err := s.booksRepository.PatchBook(ctx, book)
+	var authorIDs []int
+	if payload.AuthorIDs != nil {
+		authorIDs = payload.AuthorIDs
+	} else {
+		authorIDs = nil
+	}
+
+	var categoryIDs []int
+	if payload.CategoryIDs != nil {
+		categoryIDs = payload.CategoryIDs
+	} else {
+		categoryIDs = nil
+	}
+
+	updatedBook, err := s.booksRepository.PatchBook(ctx, book, authorIDs, categoryIDs)
 	if err != nil {
 		return domain.Book{}, err
 	}
@@ -142,12 +138,12 @@ func (s *BookService) PatchBook(
 	return updatedBook, nil
 }
 
-func extractStorageUUID(
-	objectKey string,
-) string {
+func extractStorageUUID(objectKey *string) string {
+	if objectKey == nil {
+		return uuid.NewString()
+	}
 
-	parts := strings.Split(objectKey, "/")
-
+	parts := strings.Split(*objectKey, "/")
 	if len(parts) < 2 {
 		return uuid.NewString()
 	}

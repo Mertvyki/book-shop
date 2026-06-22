@@ -29,7 +29,7 @@ type UsersService interface {
 		ctx context.Context,
 		limit *int,
 		offset *int,
-	) ([]domain.User, error)
+	) (user_service.GetUsersResult, error)
 
 	GetUser(
 		ctx context.Context,
@@ -57,16 +57,6 @@ func NewUsersHTTPHandler(
 		usersService:    usersService,
 		authMiddleware:  authMiddleware,
 		adminMiddleware: adminMiddleware,
-	}
-}
-
-func (req PatchUserRequest) ToDomain() user_service.PatchUserPayload {
-	return user_service.PatchUserPayload{
-		Email:       req.Email.ToDomain(),
-		FullName:    req.FullName.ToDomain(),
-		PhoneNumber: req.PhoneNumber.ToDomain(),
-		Password:    req.Password.ToDomain(),
-		OldPassword: req.OldPassword.ToDomain(),
 	}
 }
 

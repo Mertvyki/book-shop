@@ -39,6 +39,10 @@ func (s *HTTPServer) RegisterAPIRouters(routers ...*APIVersionRouter) {
 	}
 }
 
+func (s *HTTPServer) RegisterHandler(method, path string, handler http.Handler) {
+	s.mux.Handle(fmt.Sprintf("%s %s", method, path), handler)
+}
+
 func (s *HTTPServer) Run(ctx context.Context) error {
 	mux := core_http_middleware.ChainMiddleware(s.mux, s.middleware...)
 

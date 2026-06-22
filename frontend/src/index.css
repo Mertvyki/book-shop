@@ -1,0 +1,452 @@
+@import "tailwindcss";
+
+@theme {
+  --color-orange-500: #ff8a00;
+  --color-orange-600: #e67a00;
+  --color-blue-dark: #003366;
+  --color-blue-accent: #0066cc;
+  --color-silver: #c0c0c0;
+  --color-silver-light: #e8e8e8;
+  --color-silver-dark: #a0a0a0;
+  --color-steel: #7a8b9e;
+  --color-gray-150: #e5e5e5;
+  --color-gray-200: #e0e0e0;
+  --color-gray-250: #d0d0d0;
+  --color-gray-350: #999;
+  --color-gray-400: #888;
+  --color-gray-500: #666;
+  --color-gray-600: #444;
+  --color-gray-700: #333;
+}
+
+@layer base {
+  body {
+    background: linear-gradient(180deg, #d8dce0 0%, #e5e5e5 40%, #ececec 100%);
+    font-family: Verdana, Tahoma, Arial, sans-serif;
+    color: #222;
+    margin: 0;
+    padding: 0;
+  }
+
+  ::selection {
+    background: #ff8a00;
+    color: #fff;
+  }
+}
+
+/* ─── Box / Container ─── */
+@utility y2k-box {
+  background-color: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+@utility y2k-box-thick {
+  background-color: #fff;
+  border: 2px solid #c0c0c0;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+/* Blue-gray card (for catalog) */
+@utility y2k-card-blue {
+  background: linear-gradient(180deg, #f0f2f5 0%, #e2e6ed 100%);
+  border: 1px solid #c8ced6;
+  border-radius: 8px 8px 6px 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+@utility y2k-card-header {
+  background: linear-gradient(180deg, #d6dce6 0%, #c0c8d4 100%);
+  border-bottom: 1px solid #b0b8c4;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #334;
+  letter-spacing: 0.5px;
+}
+
+/* ─── Buttons ─── */
+@utility y2k-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid #b06000;
+  border-radius: 5px;
+  padding: 5px 14px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #ffb84d 0%, #ff8a00 40%, #e67a00 100%);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3);
+  &:hover {
+    background: linear-gradient(180deg, #ffc566 0%, #ff9500 40%, #f08500 100%);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  &:active {
+    background: linear-gradient(180deg, #e67a00 0%, #ff8a00 60%, #ffb84d 100%);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+@utility y2k-btn-secondary {
+  background: linear-gradient(180deg, #f5f5f5 0%, #e0e0e0 40%, #d0d0d0 100%);
+  color: #333;
+  border-color: #bbb;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.5);
+  &:hover { background: linear-gradient(180deg, #fff 0%, #e8e8e8 40%, #d8d8d8 100%); }
+  &:active { background: linear-gradient(180deg, #d0d0d0 0%, #e0e0e0 60%, #f0f0f0 100%); }
+}
+
+@utility y2k-btn-danger {
+  background: linear-gradient(180deg, #ff6b6b 0%, #dc3545 40%, #c82333 100%);
+  color: #fff;
+  border-color: #a71d2a;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+
+@utility y2k-btn-ghost {
+  background: none;
+  border: none;
+  color: #0066cc;
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 4px 8px;
+  &:hover { color: #ff8a00; }
+}
+
+/* WinXP glossy button (for admin & user panel) */
+@utility y2k-btn-xp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border: 1px solid #8a9bb5;
+  border-radius: 4px;
+  padding: 3px 10px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #eef1f7 0%, #d6dce8 40%, #c4cbd8 100%);
+  color: #2a3a5c;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.7);
+  &:hover {
+    background: linear-gradient(180deg, #f5f8ff 0%, #dee6f2 40%, #d0d9e8 100%);
+    border-color: #ff8a00;
+    color: #e67a00;
+  }
+  &:active {
+    background: linear-gradient(180deg, #c4cbd8 0%, #d6dce8 60%, #eef1f7 100%);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+  }
+}
+
+@utility y2k-btn-xp-orange {
+  background: linear-gradient(180deg, #ffe0b3 0%, #ffb84d 40%, #ff8a00 100%);
+  color: #fff;
+  border-color: #b06000;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.4);
+  &:hover {
+    background: linear-gradient(180deg, #ffebcc 0%, #ffc566 40%, #ff9500 100%);
+  }
+  &:active {
+    background: linear-gradient(180deg, #e67a00 0%, #ff8a00 60%, #ffb84d 100%);
+  }
+}
+
+/* ─── Input ─── */
+@utility y2k-input {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  border: 1px solid #aab;
+  border-radius: 4px;
+  padding: 4px 8px;
+  background: #fff;
+  color: #333;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  width: 100%;
+  &:focus {
+    outline: none;
+    border-color: #ff8a00;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1), 0 0 0 1px #ff8a00;
+  }
+}
+
+@utility y2k-select {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  border: 1px solid #aab;
+  border-radius: 4px;
+  padding: 4px 6px;
+  background: #fff;
+  color: #333;
+  &:focus { outline: none; border-color: #ff8a00; }
+}
+
+@utility y2k-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #556;
+  margin-bottom: 3px;
+  letter-spacing: 0.3px;
+}
+
+@utility y2k-link {
+  color: #0066cc;
+  text-decoration: underline;
+  font-size: 11px;
+  &:hover { color: #ff8a00; }
+}
+
+/* ─── Tables ─── */
+@utility y2k-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  th {
+    background: linear-gradient(180deg, #d6dce8 0%, #c0c8d4 100%);
+    border-bottom: 1px solid #aab4c0;
+    padding: 6px 10px;
+    text-align: left;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #2a3a5c;
+    letter-spacing: 0.3px;
+  }
+  td {
+    border-bottom: 1px solid #ddd;
+    padding: 5px 10px;
+  }
+  tr:nth-child(even) td { background: #f6f8fa; }
+  tr:hover td { background: #faf0e0; }
+}
+
+@utility y2k-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+@utility y2k-tag {
+  display: inline-block;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 3px;
+  border: 1px solid #c8ced6;
+  background: #f0f2f5;
+  color: #445;
+  cursor: pointer;
+  &:hover { border-color: #ff8a00; color: #ff8a00; }
+}
+
+@utility y2k-tag-active {
+  background: #ffe8cc;
+  border-color: #ff8a00;
+  color: #e67a00;
+  font-weight: 700;
+}
+
+@utility y2k-title {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #003366;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@utility y2k-subtitle {
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #003366;
+  text-transform: uppercase;
+}
+
+@utility y2k-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #e67a00;
+}
+
+@utility y2k-loading {
+  text-align: center;
+  padding: 60px 0;
+  color: #888;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+@utility y2k-divider {
+  border: none;
+  border-top: 1px solid #d0d0d0;
+  margin: 14px 0;
+}
+
+/* ─── Decorative Y2K line (under header) ─── */
+@utility y2k-deco-line {
+  height: 4px;
+  background: repeating-linear-gradient(
+    45deg,
+    #c0c8d4 0px, #c0c8d4 2px,
+    transparent 2px, transparent 4px,
+    #aab4c0 4px, #aab4c0 6px,
+    transparent 6px, transparent 8px
+  );
+  border-top: 1px solid #b0b8c4;
+  border-bottom: 1px solid #d8dce0;
+}
+
+/* ─── Sidebar ─── */
+@utility y2k-sidebar-block {
+  background: linear-gradient(180deg, #f0f2f5 0%, #e4e8ee 100%);
+  border: 1px solid #c8ced6;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+@utility y2k-sidebar-header {
+  background: linear-gradient(180deg, #d6dce8 0%, #c0c8d4 100%);
+  border-bottom: 1px solid #b0b8c4;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #2a3a5c;
+  letter-spacing: 0.5px;
+}
+
+@utility y2k-sidebar-item {
+  display: block;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #334;
+  text-decoration: none;
+  border-bottom: 1px solid #dce0e6;
+  &:hover {
+    background: #fff8f0;
+    color: #ff8a00;
+  }
+}
+
+/* ─── Admin sidebar ─── */
+@utility y2k-admin-sidebar {
+  width: 200px;
+  background: linear-gradient(180deg, #d8dee8 0%, #c4ccd8 100%);
+  border: 1px solid #aab4c0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+@utility y2k-admin-sidebar-item {
+  display: block;
+  padding: 6px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #2a3a5c;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #b8c0cc;
+  text-decoration: none;
+  &:hover {
+    background: #fff8f0;
+    color: #ff8a00;
+  }
+}
+
+@utility y2k-admin-sidebar-item-active {
+  background: linear-gradient(180deg, #ffb84d 0%, #ff8a00 100%);
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  &:hover { background: linear-gradient(180deg, #ffc566 0%, #ff9500 100%); color: #fff; }
+}
+
+/* ─── Metallic admin top bar ─── */
+@utility y2k-admin-topbar {
+  background: linear-gradient(180deg, #d0d6e0 0%, #b8c0cc 40%, #aab4c0 100%);
+  border: 1px solid #96a0ae;
+  border-radius: 6px;
+  padding: 8px 14px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.4);
+}
+
+/* ─── Hero ─── */
+@utility y2k-hero-orange {
+  background: linear-gradient(135deg, #ff8a00 0%, #e67a00 100%);
+  border-radius: 10px;
+  color: #fff;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+/* ─── File input button ─── */
+@utility y2k-file-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: Verdana, Tahoma, Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border: 1px solid #8a9bb5;
+  border-radius: 4px;
+  padding: 5px 12px;
+  cursor: pointer;
+  background: linear-gradient(180deg, #eef1f7 0%, #d6dce8 40%, #c4cbd8 100%);
+  color: #2a3a5c;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.7);
+  input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  &:hover {
+    background: linear-gradient(180deg, #f5f8ff 0%, #dee6f2 40%, #d0d9e8 100%);
+    border-color: #ff8a00;
+    color: #e67a00;
+  }
+  &:active {
+    background: linear-gradient(180deg, #c4cbd8 0%, #d6dce8 60%, #eef1f7 100%);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.15);
+  }
+}
+
+/* ─── Mini-toolbar ─── */
+@utility y2k-toolbar {
+  background: linear-gradient(180deg, #e8ecf2 0%, #d8dce6 100%);
+  border: 1px solid #c0c8d4;
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-size: 10px;
+  color: #556;
+}

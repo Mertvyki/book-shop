@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	core_errors "github.com/Mertvyki/book-shop/internal/core/errrors"
 	core_logger "github.com/Mertvyki/book-shop/internal/core/logger"
 	core_security "github.com/Mertvyki/book-shop/internal/core/security"
 	core_http_response "github.com/Mertvyki/book-shop/internal/core/transport/http/response"
@@ -26,27 +27,27 @@ func Authenticate(jwtManager *core_security.JWTManager) Middleware {
 
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
-				responseHandler.ErrorResponse(fmt.Errorf("missing or invalid authorization header"), "unauthorized")
+				w.WriteHeader(http.StatusUnauthorized)
 				return
 			}
 			tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
 			claims, err := jwtManager.Parse(tokenString)
 			if err != nil {
-				responseHandler.ErrorResponse(fmt.Errorf("invalid token: %w", err), "unauthorized")
+				responseHandler.ErrorResponse(fmt.Errorf("invalid token: %w: %w", err, core_errors.ErrUnauthorized), "unauthorized")
 				return
 			}
 
 			userIDFloat, ok := claims["user_id"].(float64)
 			if !ok {
-				responseHandler.ErrorResponse(fmt.Errorf("invalid token claims"), "unauthorized")
-				return
-			}
-			userID := int(userIDFloat)
+			responseHandler.ErrorResponse(fmt.Errorf("invalid token claims: %w", core_errors.ErrUnauthorized), "unauthorized")
+			return
+		}
+		userID := int(userIDFloat)
 
-			role, ok := claims["role"].(string)
-			if !ok {
-				responseHandler.ErrorResponse(fmt.Errorf("invalid token claims"), "unauthorized")
+		role, ok := claims["role"].(string)
+		if !ok {
+			responseHandler.ErrorResponse(fmt.Errorf("invalid token claims: %w", core_errors.ErrUnauthorized), "unauthorized")
 				return
 			}
 

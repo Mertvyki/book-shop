@@ -1,18 +1,19 @@
 package auth_transport_http
 
-import (
-	"github.com/Mertvyki/book-shop/internal/core/domain"
-)
-
 type LoginDTOResponse struct {
-	AccessToken  string
-	RefreshToken string
-	User         domain.User
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	User         struct {
+		ID       int    `json:"id"`
+		Email    string `json:"email"`
+		FullName string `json:"full_name"`
+		Role     string `json:"role"`
+	} `json:"user"`
 }
 
 type RefreshDTOResponse struct {
-	AccessToken  string
-	RefreshToken string
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 func RefreshTokenDTOFromDomain(accessToken string, refreshToken string) RefreshDTOResponse {
@@ -22,10 +23,20 @@ func RefreshTokenDTOFromDomain(accessToken string, refreshToken string) RefreshD
 	}
 }
 
-func loginDTOFromDomain(accessToken string, refreshToken string, user domain.User) LoginDTOResponse {
+func loginDTOFromDomain(accessToken string, refreshToken string, userID int, email, fullName, role string) LoginDTOResponse {
 	return LoginDTOResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
-		User:         user,
+		User: struct {
+			ID       int    `json:"id"`
+			Email    string `json:"email"`
+			FullName string `json:"full_name"`
+			Role     string `json:"role"`
+		}{
+			ID:       userID,
+			Email:    email,
+			FullName: fullName,
+			Role:     role,
+		},
 	}
 }

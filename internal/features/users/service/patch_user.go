@@ -60,6 +60,12 @@ func (s *UserService) PatchUser(
 	if patch.PhoneNumber.Set {
 		user.PhoneNumber = patch.PhoneNumber.Value
 	}
+	if patch.Role.Set {
+		if patch.Role.Value == nil || (*patch.Role.Value != "customer" && *patch.Role.Value != "employee") {
+			return domain.User{}, fmt.Errorf("invalid role: must be 'customer' or 'employee': %w", core_errors.ErrInvalidArgument)
+		}
+		user.Role = *patch.Role.Value
+	}
 	//user.UpdatedAt = time.Now().UTC()
 	patchedUser, err := s.usersRepository.PatchUser(ctx, user)
 	if err != nil {

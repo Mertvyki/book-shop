@@ -9,8 +9,6 @@ import (
 	core_http_response "github.com/Mertvyki/book-shop/internal/core/transport/http/response"
 )
 
-type GetUsersResponse []UserDTOResponse
-
 func (h *UsersHTTPHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
@@ -18,25 +16,27 @@ func (h *UsersHTTPHandler) GetUsers(rw http.ResponseWriter, r *http.Request) {
 
 	limit, offset, err := getLimitOffsetQueryParams(r)
 	if err != nil {
-		responseHandler.ErrorResponse(
-			err,
-			"failed to get limit/offset query param",
-		)
-
+		responseHandler.ErrorResponse(err, "failed to get limit/offset query param")
 		return
 	}
 
-	userDomains, err := h.usersService.GetUsers(ctx, limit, offset)
+	result, err := h.usersService.GetUsers(ctx, limit, offset)
 	if err != nil {
-		responseHandler.ErrorResponse(
-			err,
-			"failed to get users",
-		)
-
+		responseHandler.ErrorResponse(err, "failed to get users")
 		return
 	}
 
-	response := GetUsersResponse(usersDTOFromDomains(userDomains))
+	dtoUsers := usersDTOFromDomains(result.Users)
+	page := 1
+	if limit != nil && *limit > 0 && offset != nil {
+		page = *offset / *limit + 1
+	}
+	limitVal := 20
+	if limit != nil {
+		limitVal = *limit
+	}
+
+	response := core_http_response.NewPaginatedResponse(dtoUsers, result.Total, page, limitVal)
 	responseHandler.JSONResponse(response, http.StatusOK)
 }
 
